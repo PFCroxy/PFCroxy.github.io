@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f0e8d6">
+  <meta name="description" content="《东方幻存神签》御神签抽签程序：硬币法、八面骰、六面骰与签箱法，一键抽取一百二十八番神签，并收录全书漫画。">
+  <title>东方幻存神签 · 博丽神社御神签</title>
+  <link rel="icon" href="app/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="app/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到主要内容</a>
+
+  <div class="site-frame" id="top">
+    <header class="site-header">
+      <a class="brand" href="#draw" data-view="draw" aria-label="东方幻存神签，返回抽签">
+        <span class="brand-mark" aria-hidden="true">签</span>
+        <span class="brand-text">
+          <strong>东方幻存神签</strong>
+          <small>博丽神社 · 御神签</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <button class="nav-link is-active" type="button" data-view="draw" aria-current="page">
+          <span class="nav-index">一</span>抽签
+        </button>
+        <button class="nav-link" type="button" data-view="comics">
+          <span class="nav-index">二</span>漫画
+        </button>
+        <button class="nav-link" type="button" data-view="archive">
+          <span class="nav-index">三</span>签库
+        </button>
+      </nav>
+
+      <div class="header-tools">
+        <button class="icon-button" id="soundToggle" type="button" aria-pressed="true" aria-label="关闭音效" title="音效开关">
+          <svg class="icon icon-sound-on" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3l5 4V5L7 9H4Z"></path>
+            <path d="M16 8.5a5 5 0 0 1 0 7M18.7 6a8.5 8.5 0 0 1 0 12"></path>
+          </svg>
+          <svg class="icon icon-sound-off" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 9v6h3l5 4V5L7 9H4Z"></path>
+            <path d="m16 9 5 6M21 9l-5 6"></path>
+          </svg>
+          <span class="icon-label" id="soundLabel">音效</span>
+        </button>
+        <button class="history-button" id="historyButton" type="button" aria-controls="historyDrawer" aria-expanded="false">
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 7v5l3 2"></path>
+            <path d="M4.5 9A8 8 0 1 1 4 12"></path>
+            <path d="M4 5v4h4"></path>
+          </svg>
+          <span>签历</span>
+          <span class="history-count" id="historyCount">0</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- ============================ 抽签 ============================ -->
+      <section class="view is-active" id="view-draw" data-view-panel="draw" aria-label="在线抽签">
+        <h1 class="sr-only">东方幻存神签 · 抽签</h1>
+        <div class="ritual-grid">
+          <aside class="control-card" aria-labelledby="modeHeading">
+            <div class="section-heading">
+              <span class="section-number">壹</span>
+              <div>
+                <h2 id="modeHeading">择一古法</h2>
+                <p>四种来自书中的抽签方式</p>
+              </div>
+              <button class="text-link" id="instructionsButton" type="button">翻看书页</button>
+            </div>
+
+            <div class="mode-picker" id="modePicker" role="radiogroup" aria-label="选择抽签方式"></div>
+
+            <div class="rule-card">
+              <div class="rule-card-head">
+                <span class="rule-name" id="ruleName">硬币法</span>
+                <span class="rule-tag" id="ruleTag">七枚 · 二进制</span>
+              </div>
+              <p id="ruleDescription">七枚硬币从左到右分别对应 64、32、16、8、4、2、1。正面取数字，反面记 0，全部相加后再加 1。</p>
+              <div class="formula-row">
+                <span>算式</span>
+                <code id="ruleFormula">Σ（正面 × 权重）+ 1</code>
+              </div>
+              <span class="rule-source" id="ruleSource">《本书使用方法》第 2 页</span>
+            </div>
+
+            <button class="draw-button" id="drawButton" type="button">
+              <span class="draw-button-main">
+                <svg class="icon draw-button-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path>
+                  <circle cx="12" cy="12" r="3.2"></circle>
+                </svg>
+                <span id="drawButtonText">摇 签</span>
+              </span>
+              <span class="draw-button-sub">ONE TAP · 一键抽签</span>
+            </button>
+
+            <div class="control-foot">
+              <span>每日一签，也可随时再抽</span>
+              <button class="text-link text-link-red" id="randomMethodButton" type="button">换一种方法</button>
+            </div>
+          </aside>
+
+          <section class="stage-card" id="stage" aria-label="抽签台">
+            <div class="stage-head">
+              <span class="stage-label">第二十四签所</span>
+              <span class="stage-status" id="stageStatus" role="status" aria-live="polite"><i></i><span>静候</span></span>
+            </div>
+
+            <div class="stage-scene-area" id="stageScene">
+              <div class="stage-watermark" aria-hidden="true">签</div>
+              <div class="stage-rings" aria-hidden="true"></div>
+
+              <div class="stage-mode is-active" data-stage-mode="coin">
+                <canvas class="blender-canvas" id="coinCanvas" width="900" height="390" aria-hidden="true"></canvas>
+                <p class="stage-hint">七枚硬币，从左至右：64 · 32 · 16 · 8 · 4 · 2 · 1</p>
+              </div>
+
+              <div class="stage-mode" data-stage-mode="d8">
+                <canvas class="blender-canvas" id="d8Canvas" width="900" height="390" aria-hidden="true"></canvas>
+                <p class="stage-hint">三次投掷 · 首掷定乾坤，二掷乘八，三掷减八</p>
+              </div>
+
+              <div class="stage-mode" data-stage-mode="d6">
+                <canvas class="blender-canvas" id="d6Canvas" width="900" height="390" aria-hidden="true"></canvas>
+                <p class="stage-hint">三次投掷 · 首掷乘以三十六，结果须落在一至一百二十八</p>
+              </div>
+
+              <div class="stage-mode" data-stage-mode="box">
+                <canvas class="blender-canvas" id="boxCanvas" width="900" height="390" aria-hidden="true"></canvas>
+                <p class="stage-hint">一百二十八支 · 原初而严密的抽签方法</p>
+              </div>
+
+              <div class="draw-flash" id="drawFlash" aria-hidden="true"></div>
+            </div>
+
+            <div class="stage-foot">
+              <div class="progress-track"><span id="drawProgress"></span></div>
+              <div class="stage-caption">
+                <span id="stageCaption">选择方法，然后摇动签筒</span>
+                <span id="stageCount">00 / 00</span>
+              </div>
+            </div>
+            <button class="stage-quick-draw" id="stageQuickDraw" type="button" aria-label="立即摇签">摇签</button>
+          </section>
+        </div>
+
+        <section class="recent-section" aria-labelledby="recentTitle">
+          <div class="recent-head">
+            <div>
+              <span class="section-number">贰</span>
+              <h2 id="recentTitle">最近的签</h2>
+            </div>
+            <button class="text-link" id="recentAllButton" type="button">全部签历 →</button>
+          </div>
+          <div class="recent-list" id="recentList"></div>
+        </section>
+      </section>
+
+      <!-- ============================ 漫画 ============================ -->
+      <section class="view" id="view-comics" data-view-panel="comics" aria-label="漫画" hidden>
+        <h1 class="sr-only">东方幻存神签 · 漫画</h1>
+        <div class="comic-collections" id="comicCollections"></div>
+
+        <section class="comic-pages-section" aria-labelledby="comicPagesTitle">
+          <div class="recent-head">
+            <div>
+              <span class="section-number">页</span>
+              <h2 id="comicPagesTitle">逐页翻阅</h2>
+            </div>
+            <span class="quiet-note">单击任意一页，从那里开始阅读</span>
+          </div>
+          <div id="comicPageGroups"></div>
+        </section>
+
+        <div class="comic-footnote">
+          <span class="seal-small" aria-hidden="true">藏</span>
+          <p>漫画原页来自工作区扫描图，程序内按原图清晰度加载。阅读器支持键盘 ← → 翻页、手机左右滑动，以及缩略图快速跳转。</p>
+        </div>
+      </section>
+
+      <!-- ============================ 签库 ============================ -->
+      <section class="view" id="view-archive" data-view-panel="archive" aria-label="签库" hidden>
+        <h1 class="sr-only">东方幻存神签 · 一百二十八签</h1>
+        <div class="archive-head">
+          <div class="archive-tools">
+            <label class="search-field">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="6.5"></circle>
+                <path d="m16 16 4 4"></path>
+              </svg>
+              <span class="sr-only">搜索签号或角色名</span>
+              <input id="archiveSearch" type="search" placeholder="搜索签号或角色名…" autocomplete="off">
+            </label>
+            <button class="outline-button" id="randomArchiveButton" type="button">
+              <span aria-hidden="true">✦</span> 随手翻一签
+            </button>
+          </div>
+        </div>
+
+        <div class="archive-bar">
+          <span id="archiveCount">共 128 签</span>
+          <span class="archive-bar-note">点击签纸查看文字签文与原页</span>
+        </div>
+        <div class="archive-grid" id="archiveGrid"></div>
+        <div class="empty-state" id="archiveEmpty" hidden>
+          <span class="empty-mark" aria-hidden="true">无</span>
+          <p>没有找到对应的签。</p>
+          <button class="text-link" id="clearSearchButton" type="button">清除搜索</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-brand"><span class="brand-mark brand-mark-small" aria-hidden="true">签</span><span>东方幻存神签 · 博丽神社</span></div>
+      <div class="footer-copy">
+        <p>依据《东方幻存神签》「本书使用方法」制作 · 仅作个人阅览与娱乐</p>
+        <p class="footer-credit">图片来源声明：所有图文均取自于bilibili<a class="footer-link" href="https://space.bilibili.com/3546881946814832?spm_id_from=333.1369.opus.module_author_avatar.click" target="_blank" rel="noopener">吃不飽汉化组</a></p>
+        <p class="footer-credit">作者：<a class="footer-link" href="https://space.bilibili.com/689944204" target="_blank" rel="noopener">Cooloon</a></p>
+      </div>
+      <button class="text-link" type="button" id="footerInstructions">使用方法</button>
+    </footer>
+  </div>
+
+  <div class="mobile-draw-dock" id="mobileDrawDock" hidden>
+    <div class="mobile-draw-method">
+      <span>当前古法</span>
+      <strong id="mobileMethodName">硬币法</strong>
+    </div>
+    <button class="mobile-draw-button" id="mobileDrawButton" type="button">
+      <span aria-hidden="true">✦</span> 摇 签
+    </button>
+  </div>
+
+  <!-- ============================ 结果 ============================ -->
+  <div class="result-modal" id="resultModal" aria-hidden="true">
+    <div class="result-backdrop" data-close-result></div>
+    <div class="petal-field" id="petalField" aria-hidden="true"></div>
+    <div class="result-shell" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <button class="result-close" type="button" data-close-result aria-label="关闭结果">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"></path></svg>
+      </button>
+
+      <div class="result-gallery">
+        <div class="result-gallery-head">
+          <span id="resultMethod">硬币法</span>
+          <span id="resultTime"></span>
+        </div>
+        <div class="fortune-frame" id="fortuneFrame" role="button" tabindex="0" aria-label="点击放大查看原页大图">
+          <div class="fortune-loading" id="fortuneLoading"><span></span><small>正在请出神签</small></div>
+          <img id="fortuneImage" alt="" width="1443" height="2048">
+          <span class="fortune-seal" id="fortuneSeal" aria-hidden="true">第<br>??<br>番</span>
+          <span class="fortune-frame-corner fortune-frame-corner-tl" aria-hidden="true"></span>
+          <span class="fortune-frame-corner fortune-frame-corner-br" aria-hidden="true"></span>
+          <span class="fortune-zoom-hint" aria-hidden="true">点击查看原图</span>
+        </div>
+      </div>
+
+      <div class="result-info">
+        <p class="result-overline">東方幻存神籤 · 御籤</p>
+        <div class="result-number-row">
+          <span class="result-hash">第</span>
+          <span class="result-number" id="resultNumber">128</span>
+          <span class="result-hash">番</span>
+        </div>
+        <h2 id="resultTitle">博丽灵梦</h2>
+        <p class="result-subtitle" id="resultSubtitle">签文原页已展开</p>
+
+        <div class="result-meta-row">
+          <span class="result-chip" id="resultMethodChip">硬币法</span>
+          <span class="result-chip result-chip-ghost" id="resultSourceChip">本书第 2 页</span>
+        </div>
+
+        <section class="fortune-text-card" aria-labelledby="fortuneTextHeading">
+          <div class="fortune-text-head">
+            <span class="fortune-text-kicker" id="fortuneTextHeading">签文</span>
+            <span class="fortune-rank-title" id="resultRankTitle"></span>
+          </div>
+          <p class="fortune-ability" id="resultAbility"></p>
+          <div class="fortune-poem" id="resultPoem"></div>
+          <p class="fortune-details-title">运势详解</p>
+          <div class="fortune-details" id="resultDetails"></div>
+        </section>
+
+        <blockquote class="result-quote" id="resultQuote">神签不替你决定，只替你把犹豫翻过一页。</blockquote>
+
+        <div class="result-actions">
+          <button class="primary-button" id="drawAgainButton" type="button">再抽一签</button>
+          <button class="outline-button" id="copyResultButton" type="button">复制签文</button>
+          <button class="outline-button" id="archiveFromResultButton" type="button">去签库</button>
+        </div>
+        <p class="result-footnote">神签内容以原页为准。愿这一签，给你一点往前走的借口。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ 漫画阅读器 ============================ -->
+  <div class="comic-reader" id="comicReader" aria-hidden="true">
+    <header class="reader-header">
+      <button class="reader-button reader-back" id="readerCloseButton" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+        返回
+      </button>
+      <div class="reader-title-block">
+        <span id="readerKicker">本篇漫画</span>
+        <strong id="readerTitle">博丽神社的御神签</strong>
+      </div>
+      <div class="reader-tools">
+        <span class="reader-page-count" id="readerPageCount">1 / 12</span>
+        <button class="reader-button reader-icon-button" id="readerFullscreenButton" type="button" aria-label="全屏阅读" title="全屏阅读">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5"></path></svg>
+        </button>
+        <button class="reader-button reader-icon-button" id="readerCloseIcon" type="button" aria-label="关闭阅读器" title="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"></path></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="reader-stage" id="readerStage">
+      <button class="reader-arrow reader-arrow-prev" id="readerPrevButton" type="button" aria-label="上一页">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"></path></svg>
+      </button>
+      <div class="reader-page-wrap">
+        <div class="reader-loading" id="readerLoading"><span></span><small>页面的墨迹正在展开…</small></div>
+        <img id="readerImage" alt="">
+        <p class="reader-error" id="readerError" hidden>这一页暂时没有展开。<br><button class="text-link" id="readerRetryButton" type="button">重试</button></p>
+      </div>
+      <button class="reader-arrow reader-arrow-next" id="readerNextButton" type="button" aria-label="下一页">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"></path></svg>
+      </button>
+    </div>
+
+    <footer class="reader-footer">
+      <div class="reader-progress"><span id="readerProgress"></span></div>
+      <div class="reader-controls">
+        <span class="reader-caption" id="readerCaption">第 1 页</span>
+        <div class="reader-thumbs" id="readerThumbs" aria-label="页面缩略图"></div>
+        <a class="reader-original" id="readerOriginalLink" href="#" target="_blank" rel="noopener">原图 ↗</a>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ============================ 签历 ============================ -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="history-drawer" id="historyDrawer" aria-hidden="true" aria-labelledby="historyTitle">
+    <div class="drawer-head">
+      <div>
+        <p class="eyebrow"><span class="eyebrow-line"></span>抽签记录</p>
+        <h2 id="historyTitle">签历</h2>
+      </div>
+      <button class="icon-button drawer-close" id="historyCloseButton" type="button" aria-label="关闭签历">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"></path></svg>
+      </button>
+    </div>
+    <div class="drawer-body" id="historyList"></div>
+    <div class="drawer-foot">
+      <span>记录只保存在这台设备</span>
+      <button class="text-link text-link-red" id="clearHistoryButton" type="button">清空签历</button>
+    </div>
+  </aside>
+
+  <!-- ============================ 书页说明 ============================ -->
+  <div class="simple-modal" id="instructionsModal" aria-hidden="true">
+    <div class="simple-modal-backdrop" data-close-instructions></div>
+    <div class="instructions-sheet" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+      <button class="result-close instructions-close" type="button" data-close-instructions aria-label="关闭说明">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"></path></svg>
+      </button>
+      <p class="eyebrow"><span class="eyebrow-line"></span>原书页</p>
+      <h2 id="instructionsTitle">本书使用方法</h2>
+      <p class="instructions-lead">四种抽签方式均依照书页转写。硬币法与骰子法的算式、重掷规则和签号映射都尽量保持原样；点击书页可查看大图。</p>
+      <div class="instruction-pages">
+        <button class="instruction-page" type="button" data-instruction-src="app/assets/source/book/P002 本书使用方法-1.png">
+          <img src="app/assets/source/book/P002 本书使用方法-1.png" alt="《本书使用方法》第 2 页：硬币法说明" loading="lazy">
+          <span>第 2 页 · 硬币法</span>
+        </button>
+        <button class="instruction-page" type="button" data-instruction-src="app/assets/source/book/P003 本书使用方法-2.png">
+          <img src="app/assets/source/book/P003 本书使用方法-2.png" alt="《本书使用方法》第 3 页：骰子法与签箱法说明" loading="lazy">
+          <span>第 3 页 · 骰子法与签箱法</span>
+        </button>
+      </div>
+      <div class="instructions-note">
+        <strong>六面骰的小注</strong>
+        <p>原书也写明：仅靠三次六面骰无法保证每个签号概率完全均等。程序忠实执行「结果不在 1～128 之间就整组重掷」，并在结果页显示重掷次数。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================ 原图灯箱 ============================ -->
+  <div class="lightbox" id="imageLightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxCloseButton" type="button" aria-label="关闭大图">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19"></path></svg>
+    </button>
+    <img id="lightboxImage" alt="" draggable="false">
+    <p id="lightboxCaption"></p>
+    <p class="lightbox-hint" aria-hidden="true">滚轮缩放 · 拖动查看 · 双击还原</p>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app/data.js"></script>
+  <script src="app/core.js"></script>
+  <script src="app/fortune-text.js"></script>
+  <script src="app/3d-data.js"></script>
+  <script src="app/blender-scenes.js"></script>
+  <script src="app/app.js"></script>
+</body>
+</html>

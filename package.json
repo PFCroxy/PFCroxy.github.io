@@ -1,0 +1,12 @@
+{
+  "name": "gensou-mikuji",
+  "version": "1.0.0",
+  "private": true,
+  "description": "《东方幻存神签》御神签抽签程序，内置四种书中抽签法与全书漫画。",
+  "scripts": {
+    "start": "node serve.mjs",
+    "start:lan": "node serve.mjs --lan",
+    "data": "python tools/generate_data.py",
+    "assets": "python tools/build_assets.py"
+  }
+}
